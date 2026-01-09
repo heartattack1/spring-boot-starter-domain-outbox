@@ -1,0 +1,114 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-outbox-message
+      author: you
+      changes:
+        - createTable:
+            tableName: outbox_message
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: occurred_at
+                  type: timestamptz
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: aggregate_type
+                  type: varchar(200)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: aggregate_id
+                  type: varchar(200)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: event_type
+                  type: varchar(300)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: event_version
+                  type: int
+                  defaultValueNumeric: 1
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: payload
+                  type: jsonb
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: headers
+                  type: jsonb
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: status
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: attempts
+                  type: int
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: next_attempt_at
+                  type: timestamptz
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: published_at
+                  type: timestamptz
+
+              - column:
+                  name: error
+                  type: text
+
+        - addCheckConstraint:
+            tableName: outbox_message
+            constraintName: chk_outbox_status
+            checkConstraint: "status in ('NEW','PUBLISHED','FAILED','DEAD')"
+
+        - createIndex:
+            tableName: outbox_message
+            indexName: idx_outbox_status_next_attempt
+            columns:
+              - column:
+                  name: status
+              - column:
+                  name: next_attempt_at
+
+        - createIndex:
+            tableName: outbox_message
+            indexName: idx_outbox_aggregate
+            columns:
+              - column:
+                  name: aggregate_type
+              - column:
+                  name: aggregate_id
+
+        - createIndex:
+            tableName: outbox_message
+            indexName: idx_outbox_occurred_at
+            columns:
+              - column:
+                  name: occurred_at
