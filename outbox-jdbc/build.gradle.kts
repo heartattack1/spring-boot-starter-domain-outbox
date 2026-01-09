@@ -3,8 +3,16 @@ plugins {
   id("org.liquibase.gradle")
 }
 
+val springBootVersion: String by project
+
 dependencies {
+  api(platform("org.springframework.boot:spring-boot-dependencies:$springBootVersion"))
   api(project(":outbox-core"))
+
+  compileOnly("org.projectlombok:lombok")
+  annotationProcessor("org.projectlombok:lombok")
+  implementation("org.springframework:spring-jdbc")
+  implementation("com.fasterxml.jackson.core:jackson-databind")
 
   liquibaseRuntime("org.liquibase:liquibase-core")
   liquibaseRuntime("org.postgresql:postgresql")

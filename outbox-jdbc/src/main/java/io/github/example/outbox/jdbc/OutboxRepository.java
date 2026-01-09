@@ -11,6 +11,8 @@ public interface OutboxRepository {
 
   List<OutboxMessage> lockNextBatch(List<OutboxStatus> statuses, Instant now, int batchSize);
 
+  int countPending(List<OutboxStatus> statuses, Instant now);
+
   void markPublished(UUID id, Instant publishedAt);
 
   void markFailed(UUID id, int attempts, Instant nextAttemptAt, String error);
