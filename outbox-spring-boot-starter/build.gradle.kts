@@ -12,6 +12,6 @@ dependencies {
   annotationProcessor("org.projectlombok:lombok")
   implementation("org.springframework.boot:spring-boot-autoconfigure:$springBootVersion")
   implementation("org.springframework.boot:spring-boot-starter:$springBootVersion")
-  implementation("org.springframework.boot:spring-boot-starter-jdbc:$springBootVersion")
+  implementation("org.springframework.boot:spring-boot-starter-data-jpa:$springBootVersion")
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor:$springBootVersion")
 }

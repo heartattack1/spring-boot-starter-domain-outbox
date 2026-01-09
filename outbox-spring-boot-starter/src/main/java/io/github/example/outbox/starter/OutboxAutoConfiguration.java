@@ -4,8 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.example.outbox.core.OutboxPublisher;
 import io.github.example.outbox.core.OutboxService;
 import io.github.example.outbox.jdbc.DomainEventPayloadMapper;
-import io.github.example.outbox.jdbc.JdbcOutboxRepository;
+import io.github.example.outbox.jdbc.JpaOutboxMessageRepository;
+import io.github.example.outbox.jdbc.JpaOutboxRepositoryAdapter;
 import io.github.example.outbox.jdbc.JdbcOutboxService;
+import io.github.example.outbox.jdbc.OutboxMessageEntity;
 import io.github.example.outbox.jdbc.OutboxMessageFactory;
 import io.github.example.outbox.jdbc.OutboxMessageHeaderMapper;
 import io.github.example.outbox.jdbc.OutboxRepository;
@@ -16,12 +18,15 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @AutoConfiguration
 @EnableConfigurationProperties(OutboxProperties.class)
 @ConditionalOnProperty(prefix = "outbox", name = "enabled", havingValue = "true", matchIfMissing = true)
+@EnableJpaRepositories(basePackageClasses = JpaOutboxMessageRepository.class)
+@EntityScan(basePackageClasses = OutboxMessageEntity.class)
 public class OutboxAutoConfiguration {
   @Bean
   @ConditionalOnClass(ObjectMapper.class)
@@ -44,13 +49,13 @@ public class OutboxAutoConfiguration {
   }
 
   @Bean
-  @ConditionalOnClass(JdbcTemplate.class)
+  @ConditionalOnClass(JpaOutboxMessageRepository.class)
   @ConditionalOnMissingBean
   public OutboxRepository outboxRepository(
-      JdbcTemplate jdbcTemplate,
+      JpaOutboxMessageRepository repository,
       OutboxMessageHeaderMapper headerMapper
   ) {
-    return new JdbcOutboxRepository(jdbcTemplate, headerMapper);
+    return new JpaOutboxRepositoryAdapter(repository, headerMapper);
   }
 
   @Bean

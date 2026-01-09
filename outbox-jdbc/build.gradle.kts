@@ -11,7 +11,7 @@ dependencies {
 
   compileOnly("org.projectlombok:lombok")
   annotationProcessor("org.projectlombok:lombok")
-  implementation("org.springframework:spring-jdbc")
+  implementation("org.springframework.boot:spring-boot-starter-data-jpa")
   implementation("com.fasterxml.jackson.core:jackson-databind")
 
   liquibaseRuntime("org.liquibase:liquibase-core")
